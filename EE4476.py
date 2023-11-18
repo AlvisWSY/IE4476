@@ -53,6 +53,7 @@ y_pred = lda_2d.predict(X_test)
 # Accuracy
 accuracy = sum(y_pred == y_test) / len(y_test)
 print("2D Test set accuracy: ", accuracy)
+print(lda_2d.explained_variance_ratio_)
 # save model
 joblib.dump(lda_2d, 'lda_2d_model.pkl')
 
@@ -65,7 +66,6 @@ X_train_lda_3d = lda_3d.fit_transform(X_train, y_train)
 plt.clf()
 fig=plt.figure(figsize=(30,30))
 ax = fig.add_subplot(111, projection='3d')
-
 ax.scatter(
     X_train_lda_3d[:,0],
     X_train_lda_3d[:,1],
@@ -75,7 +75,6 @@ ax.scatter(
     alpha=0.7,
     s=5
 )
-
 plt.savefig('Train_LDA_3d.png')
 # predict
 y_pred = lda_3d.predict(X_test)
@@ -85,3 +84,33 @@ print("3D Test set accuracy: ", accuracy)
 print(lda_3d.explained_variance_ratio_)
 # save model
 joblib.dump(lda_3d, 'lda_3d_model.pkl')
+
+
+
+# 4 dimension LDA
+lda_4d = LDA(n_components=4)
+# Data after LDA
+X_train_lda_4d = lda_4d.fit_transform(X_train, y_train)
+# Plot the data
+plt.clf()
+fig=plt.figure(figsize=(30,30))
+ax = fig.add_subplot(111, projection='3d')
+ax.scatter(
+    X_train_lda_4d[:,0],
+    X_train_lda_4d[:,1],
+    X_train_lda_4d[:,3],
+    c=y_train.cat.codes,
+    cmap='rainbow',
+    alpha=0.7,
+    s=5
+)
+plt.savefig('Train_LDA_4d.png')
+# predict
+y_pred = lda_4d.predict(X_test)
+# Accuracy
+accuracy = sum(y_pred == y_test) / len(y_test)
+print("4D Test set accuracy: ", accuracy)
+print(lda_4d.explained_variance_ratio_)
+# save model
+joblib.dump(lda_4d, 'lda_4d_model.pkl')
+
