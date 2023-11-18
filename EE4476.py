@@ -143,7 +143,6 @@ if POKEMON:
     # Split Data into Training and Testing Sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=13)
     y_train_num = pd.factorize(y_train)[0]
-    print(y_train_num)
 
     # define LDA
     pokemon_lda_1d = LDA(n_components=1)
