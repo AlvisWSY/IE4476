@@ -207,6 +207,14 @@ if POKEMON:
     pokemon_lda_2d = LDA(n_components=2)
     pokemon_lda_3d = LDA(n_components=3)
 
+    # define KNN
+    knn_1d = KNN(n_neighbors=16)
+    knn_2d = KNN(n_neighbors=16)
+    knn_3d = KNN(n_neighbors=16)
+
+    # 创建一个 LabelEncoder 实例
+    le = LabelEncoder()
+
     # 1 dimension LDA
     # Data after LDA
     X_train_lda_1d = pokemon_lda_1d.fit_transform(X_train, y_train)
@@ -223,7 +231,18 @@ if POKEMON:
     )
     plt.savefig('Pokemon_Train_LDA_1D.png')
     # predict
-    y_pred = pokemon_lda_1d.predict(X_test)
+    knn_1d.fit(X_train_lda_1d, y_train)
+    test_1d = pokemon_lda_1d.transform(X_test)
+    y_pred = knn_1d.predict(test_1d)
+    y_pred_num = le.fit_transform(y_pred)
+
+    # Plot the data
+    plt.clf()
+    plt.figure(figsize=(10,5))
+    plt.scatter(test_1d, np.zeros_like(test_1d), c=y_pred_num, cmap='rainbow', alpha=0.7, edgecolors='b')
+    plt.title('Pokemon KNN Predictions in 1D')
+    plt.savefig('Pokemon_KNN_Predictions_1D.png')
+
     # Accuracy
     accuracy = sum(y_pred == y_test) / len(y_test)
     print("Pokemon_1D Test set accuracy: ", accuracy)
@@ -248,7 +267,18 @@ if POKEMON:
     )
     plt.savefig('Pokemon_Train_LDA_2D.png')
     # predict
-    y_pred = pokemon_lda_2d.predict(X_test)
+    knn_2d.fit(X_train_lda_2d, y_train)
+    test_2d = pokemon_lda_2d.transform(X_test)
+    y_pred = knn_2d.predict(test_2d)
+    y_pred_num = le.fit_transform(y_pred)
+
+    # Plot the data
+    plt.clf()
+    plt.figure(figsize=(10,10))
+    plt.scatter(test_2d[:, 0], test_2d[:, 1], c=y_pred_num, cmap='viridis', alpha=0.7, s=5)
+    plt.title('Pokemon KNN Predictions in 2D')
+    plt.savefig('Pokemon_KNN_Predictions_2D.png')
+
     # Accuracy
     accuracy = sum(y_pred == y_test) / len(y_test)
     print("Pokemon_2D Test set accuracy: ", accuracy)
@@ -275,7 +305,25 @@ if POKEMON:
     )
     plt.savefig('Pokemon_Train_LDA_3D.png')
     # predict
-    y_pred = pokemon_lda_3d.predict(X_test)
+    knn_3d.fit(X_train_lda_3d, y_train)
+    test_3d = pokemon_lda_3d.transform(X_test)
+    y_pred = knn_3d.predict(test_3d)
+    y_pred_num = le.fit_transform(y_pred)
+
+    # Plot the data
+    plt.clf()
+    fig = plt.figure(figsize=(10,10))
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(test_3d[:, 0], 
+                test_3d[:, 1],
+                test_3d[:, 2],
+                c=y_pred_num, 
+                cmap='viridis',
+                alpha=0.7, 
+                s=5)
+    plt.title('Pokemon KNN Predictions in 3D')
+    plt.savefig('Pokemon_KNN_Predictions_3D.png')
+
     # Accuracy
     accuracy = sum(y_pred == y_test) / len(y_test)
     print("Pokemon_3D Test set accuracy: ", accuracy)
