@@ -4,6 +4,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.datasets import fetch_openml
 from sklearn.preprocessing import normalize
+from scipy.spatial.distance import cdist
+from sklearn.cluster import KMeans
+from sklearn.neighbors import KNeighborsClassifier as KNN
+from sklearn.preprocessing import LabelEncoder
 import joblib
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -14,6 +18,7 @@ MNIST=True
 POKEMON=True
 
 if MNIST:
+
     # load data
     mnist = fetch_openml('mnist_784', data_home='./data', cache=True)
     X, y = mnist['data'], mnist['target']
@@ -37,14 +42,16 @@ if MNIST:
             axes[i,j].axis('off')
     plt.savefig('MNIST_Train.png')
 
-
-
     # define LDA
     MNIST_lda_2d = LDA(n_components=2)
     MNIST_lda_3d = LDA(n_components=3)
     MNIST_lda_4d = LDA(n_components=4)
-
-
+    # define KNN
+    knn_2d = KNN(n_neighbors=10)
+    knn_3d = KNN(n_neighbors=10)
+    knn_4d = KNN(n_neighbors=10)
+    # 创建一个 LabelEncoder 实例
+    le = LabelEncoder()
 
     # 2 dimension LDA
     # Data after LDA
@@ -61,15 +68,26 @@ if MNIST:
         s=5
     )
     plt.savefig('MNIST_Train_LDA_2d.png')
+    # Train KNN
+    knn_2d.fit(X_train_lda_2d, y_train)
+    # Test Data after LDA
+    X_test_lda_2d = MNIST_lda_2d.transform(X_test)
     # predict
-    y_pred = MNIST_lda_2d.predict(X_test)
+    y_pred_2d = knn_2d.predict(X_test_lda_2d)
+    # Plot the data
+    # convert y_pred
+    y_pred_num = le.fit_transform(y_pred_2d)
+    plt.clf()
+    plt.figure(figsize=(30,30))
+    plt.scatter(X_test_lda_2d[:, 0], X_test_lda_2d[:, 1], c=y_pred_num, cmap='viridis', alpha=0.7, s=5)
+    plt.title('MNIST_2d_KNN_Predictions')
+    plt.savefig('MNIST_2d_KNN_Predictions.png')
     # Accuracy
-    accuracy = sum(y_pred == y_test) / len(y_test)
-    print("MNIST_2D Test set accuracy: ", accuracy)
+    accuracy_2d = sum(y_pred_2d == y_test) / len(y_test)
+    print("MNIST_2d Test set accuracy: ", accuracy_2d)
     print(MNIST_lda_2d.explained_variance_ratio_)
     # save model
     joblib.dump(MNIST_lda_2d, 'MNIST_lda_2d_model.pkl')
-
 
 
     # 3 dimension LDA
@@ -89,11 +107,31 @@ if MNIST:
         s=5
     )
     plt.savefig('MNIST_Train_LDA_3d.png')
+    # Train KNN
+    knn_3d.fit(X_train_lda_3d, y_train)
+    # Test Data after LDA
+    X_test_lda_3d = MNIST_lda_3d.transform(X_test)
     # predict
-    y_pred = MNIST_lda_3d.predict(X_test)
+    y_pred_3d = knn_3d.predict(X_test_lda_3d)
+
+    # Plot the data
+    # convert y_pred
+    y_pred_num_3d = le.fit_transform(y_pred_3d)
+    plt.clf()
+    fig = plt.figure(figsize=(30,30))
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(X_test_lda_3d[:, 0], 
+                X_test_lda_3d[:, 1],
+                X_test_lda_3d[:, 2],
+                c=y_pred_num_3d, 
+                cmap='viridis',
+                alpha=0.7, 
+                s=5)
+    plt.title('MNIST_3d_KNN_Predictions')
+    plt.savefig('MNIST_3d_KNN_Predictions.png')
     # Accuracy
-    accuracy = sum(y_pred == y_test) / len(y_test)
-    print("MNIST_3D Test set accuracy: ", accuracy)
+    accuracy_3d = sum(y_pred_3d == y_test) / len(y_test)
+    print("MNIST_3d Test set accuracy: ", accuracy_3d)
     print(MNIST_lda_3d.explained_variance_ratio_)
     # save model
     joblib.dump(MNIST_lda_3d, 'MNIST_lda_3d_model.pkl')
@@ -117,14 +155,34 @@ if MNIST:
         s=5
     )
     plt.savefig('MNIST_Train_LDA_4d.png')
+    # Train KNN
+    knn_4d.fit(X_train_lda_4d, y_train)
+    # Test Data after LDA
+    X_test_lda_4d = MNIST_lda_4d.transform(X_test)
     # predict
-    y_pred = MNIST_lda_4d.predict(X_test)
+    y_pred_4d = knn_4d.predict(X_test_lda_4d)
+    # Plot the data
+    # convert y_pred
+    y_pred_num_4d = le.fit_transform(y_pred_4d)
+    plt.clf()
+    fig = plt.figure(figsize=(30,30))
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(X_test_lda_4d[:, 0], 
+                X_test_lda_4d[:, 1],
+                X_test_lda_4d[:, 2],
+                c=y_pred_num_4d, 
+                cmap='viridis',
+                alpha=0.7, 
+                s=5)
+    plt.title('MNIST_4d_KNN_Predictions')
+    plt.savefig('MNIST_4d_KNN_Predictions.png')
     # Accuracy
-    accuracy = sum(y_pred == y_test) / len(y_test)
-    print("4D Test set accuracy: ", accuracy)
+    accuracy_4d = sum(y_pred_4d == y_test) / len(y_test)
+    print("MNIST_4d Test set accuracy: ", accuracy_4d)
     print(MNIST_lda_4d.explained_variance_ratio_)
     # save model
     joblib.dump(MNIST_lda_4d, 'MNIST_lda_4d_model.pkl')
+
 
 if POKEMON:
     # Import Pokemon Data
